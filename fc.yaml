@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fc
+  template:
+    metadata:
+      labels:
+        app: fc
+    spec:
+      containers:
+      - name: fc
+        image: <IMAGE>
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3500
+        resources:
+          requests:
+            cpu: 500m
+            memory: 500Mi
+          limits:
+            cpu: 1000m
+            memory: 1000Mi
+      imagePullSecrets:
+      - name: dcrall
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: fc
+  name: fc
+spec:
+  ports:
+  - port: 3500
+  selector:
+    app: fc
