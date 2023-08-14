@@ -1,0 +1,7 @@
+backend/node_modules
+backend/sessions
+backend/src/data/conf/config.ts
+backend/dist/data/conf/config.js
+backend/dist
+.dockerignore
+backend/src/data/nomination.json
