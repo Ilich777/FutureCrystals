@@ -76,8 +76,13 @@ class DirectionsRepository {
 	public async getDirections() : Promise<Directions[]> {
 		try{
 			const directions = await Directions.find({
-				relations: {
-					nominations: true
+				select:{
+					direction_id: true,
+					direction_name: true,
+					image: true
+				},
+				order: {
+					direction_name: "ASC"
 				}
 			});
 			return directions;

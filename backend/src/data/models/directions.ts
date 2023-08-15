@@ -15,6 +15,10 @@ class Directions extends BaseEntity {
 		direction_id: number;
 	@Column()
 		direction_name: string;
+	@Column({
+		nullable: true
+	})
+		image: string;
 	@OneToMany(
 		()=>Nominations,
 		(direction)=> direction.direction,
