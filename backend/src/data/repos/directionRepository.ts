@@ -23,6 +23,7 @@ class DirectionsRepository {
 
 				const direction1 = new Directions();
 				direction1.direction_name = culturalDir;
+				direction1.image = "cultural.jpeg";
 				direction1.nominations = culturalNom.map((data)=>mapCallback(data));
 
 				await direction1.save();
@@ -33,6 +34,7 @@ class DirectionsRepository {
 
 				const direction2 = new Directions();
 				direction2.direction_name = scienceDir;
+				direction2.image = "science.jpg";
 				direction2.nominations = scienceNom.map((data)=>mapCallback(data));
 
 				await direction2.save();
@@ -43,6 +45,7 @@ class DirectionsRepository {
 
 				const direction3 = new Directions();
 				direction3.direction_name = socialDir;
+				direction3.image = "social.jpg";
 				direction3.nominations = socialNom.map((data)=>mapCallback(data));
 
 				await direction3.save();
@@ -53,6 +56,7 @@ class DirectionsRepository {
 
 				const direction4 = new Directions();
 				direction4.direction_name = sportDir;
+				direction4.image = "sport.jpeg";
 				direction4.nominations = sportNom.map((data)=>mapCallback(data));
 
 				await direction4.save();
@@ -62,6 +66,7 @@ class DirectionsRepository {
 
 				const direction5 = new Directions();
 				direction5.direction_name = educationalDir;
+				direction5.image = "educational.jpeg";
 				direction5.nominations = educationalNom.map((data)=>mapCallback(data));
 
 				await direction5.save();

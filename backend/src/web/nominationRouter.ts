@@ -1,5 +1,5 @@
 /** 
-	/backend/src/web/directionRouter.ts - Direction management router
+	/backend/src/web/nominationRouter.ts - Nomination management router
     Copyright (C) 2023  Ilya Zhukov <ilyazhukov24@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
@@ -17,24 +17,34 @@
 
 */
 import { Router, Request, Response } from "express";
-import directionRepository from "../data/repos/directionRepository";
 import { 
 	allow,
 	isAuth 
 } from "./service/AuthMiddlewares";
+import nominationRepository from "../data/repos/nominationRepository";
+/*enum InitStatus {
+	true = "Ok",
+	false = "Already exists"
+}*/
 
-const directionRouter = Router();
+const nominationRouter = Router();
 
-directionRouter.get("/", 
+nominationRouter.get("/:id", 
 	isAuth, 
-	allow("student", async (_:Request, res:Response) => {
+	allow("student", async (req: Request , res: Response) => {
 		try{
-			const directions = await directionRepository.getDirections();
-			res.status(200).json(directions);
+			const { id } = req.params;
+			const nominations = await nominationRepository.getByDirectionId(+id);
+
+			if (nominations)
+				res.status(200).json(nominations);
+			else
+				throw new Error("Nominations by given id not found!");
 
 		} catch(e:any){
 			console.log(e.message);
 		}
 	}));
+	
 
-export { directionRouter };
+export { nominationRouter };

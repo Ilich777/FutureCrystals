@@ -29,7 +29,7 @@ const cultural/*: Nomination[]*/ = [
 		max_mark: 40
 	},
 	{
-		nomination_name: "Победитель Международных творческих конкурсов",
+		nomination_name: "Призёр Международных творческих конкурсов",
 		description: "35 баллов за 1 конкурс",
 		max_mark: 35
 	},

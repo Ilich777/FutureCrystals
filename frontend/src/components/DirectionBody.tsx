@@ -18,7 +18,7 @@ interface Dir {
 	image: string;
 }
 
-const Home = () => {
+const DirectionBody = () => {
 
 	const dir: Dir[] = [];
 	const [directions, setDirections] = useState(dir);
@@ -40,9 +40,9 @@ const Home = () => {
 
 	return (
 		<Container maxWidth="xl">
-			<Typography variant="h6" mt={5} gutterBottom sx={{ color: "#161227" }}>
+			{/* <Typography variant="h6" mt={5} gutterBottom sx={{ color: "#161227" }}>
 				Выберите направление
-			</Typography>
+			</Typography> */}
 			<Grid container spacing={6} className="CardContainer">
 				{directions.map(direction => {
 					const {
@@ -54,6 +54,7 @@ const Home = () => {
 						<Direction
 							direction={direction_name}
 							image={image}
+							key={direction_id}
 						/>
 					);
 				})}
@@ -62,4 +63,4 @@ const Home = () => {
 	);
 };
 
-export default Home;
+export default DirectionBody;

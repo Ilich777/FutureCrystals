@@ -75,6 +75,7 @@ import { requestsRouter } from "./web/requestsRouter";
 import { authRouter } from "./web/authRouter";
 import { userRouter } from "./web/userRouter";
 import { directionRouter } from "./web/directionRouter";
+import { nominationRouter } from "./web/nominationRouter";
 
 import { allow, isAuth } from "./web/service/AuthMiddlewares";
 
@@ -140,6 +141,7 @@ export const ds = dbCreateConnection(postgres)
 		app.use("/requests", requestsRouter);
 		app.use("/users", userRouter);
 		app.use("/directions", directionRouter);
+		app.use("/nomination", nominationRouter);
 	});
 
 server.listen(PORT, async () => {
