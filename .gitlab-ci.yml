@@ -26,7 +26,7 @@ build-docker:
         --build-arg api=${varApi} 
         -t $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID .
     - docker push $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID
-  when: manual
+  when: always
 deploy-k8s:
   stage: k8s
   variables:
