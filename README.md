@@ -3,14 +3,14 @@
 ## Before log in
 <div align="center";>
     <a href="https://fc.ektu.kz/">
-        <img src="readme_images/log in.jpg" alt="Login" width="90" height="80">
+        <img src="readme_images/log in.jpg" alt="Login">
     </a>
 </div>
 
 ## After log in
 <div align="center";>
     <a href="https://fc.ektu.kz/">
-        <img src="readme_images/Directions.jpg" alt="Directions" width="120" height="80">
+        <img src="readme_images/Directions.jpg" alt="Directions">
     </a>
 </div>
 
@@ -45,7 +45,7 @@ cd ../frontend
    npm run devBuild --prefix backend
    ```
 <div align="center";>
-        <img src="readme_images/backend build.jpg" alt="bbuild" width="120" height="80">
+        <img src="readme_images/backend build.jpg" alt="bbuild">
 </div>
 
 7. CREATE CONFIG FILE !!!
@@ -122,7 +122,7 @@ export const config : Config = {
 8. Press F5 to start server
 Success run
 <div align="center";>
-    <img src="readme_images/success run backend.jpg" alt="success run" width="120" height="80">
+    <img src="readme_images/success run backend.jpg" alt="success run">
 </div>
 
 9. Run frontend build
@@ -130,7 +130,7 @@ Success run
    npm run build --prefix frontend
    ```
 <div align="center";>
-    <img src="readme_images/build frontend.jpg" alt="build frontend" width="120" height="80">
+    <img src="readme_images/build frontend.jpg" alt="build frontend">
 </div>
 
 10. Run frontend server
@@ -138,7 +138,7 @@ Success run
    npm run start --prefix frontend
    ```
 <div align="center";>
-    <img src="readme_images/start frontend server.jpg" alt="start frontend" width="120" height="80">
+    <img src="readme_images/start frontend server.jpg" alt="start frontend">
 </div>
 
 ### React will give error. Don't worry!
@@ -146,11 +146,11 @@ Go to http://localhost:3500 for authentication
 
 It's ok! Launched server return builded frontend page like in production mode.
 <div align="center";>
-    <img src="readme_images/launched backend server.jpg" alt="launched backend" width="120" height="80">
+    <img src="readme_images/launched backend server.jpg" alt="launched backend">
 </div>
 But using for frontend development http://localhost:3000
 <div align="center";>
-    <img src="readme_images/launched react server.jpg" alt="launched react" width="120" height="80">
+    <img src="readme_images/launched react server.jpg" alt="launched react">
 </div>
 
 ***
