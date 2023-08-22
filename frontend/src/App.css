@@ -59,6 +59,22 @@
     animation: fadeIn 1s ease-in-out;
 }
 
+.DropArea2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed lime;
+    height: 20vh;
+}
+
+.DropArea {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 3px dashed deeppink;
+    height: 20vh;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

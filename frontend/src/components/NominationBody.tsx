@@ -9,8 +9,8 @@ import {
 	SelectChangeEvent,
 	Typography
 } from '@mui/material';
-import React, { useState, useEffect } from 'react';
-import Dropzone from 'react-dropzone';
+import React, { useState, useEffect, DragEvent } from 'react';
+import Dropzone, { FileWithPath } from 'react-dropzone';
 
 interface HPr {
 	id: number;
@@ -34,6 +34,8 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 
 	const [nomination, setNomination] = React.useState('');
 	const [isVisible, setIsVisible] = useState(false);
+	const [drag, setDrag] = useState(false);
+
 
   useEffect(() => {
     setIsVisible(true);
@@ -62,16 +64,37 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 		setSelectedNomination(findedNomination.nomination_name);
 		setnominationDescription(findedNomination.description);
 	};
+
+	const dragStartHandler = (event: DragEvent) => {
+		event.preventDefault();
+		setDrag(true);
+	}
+	
+	const dragLeaveHandler = (event: DragEvent) => {
+		event.preventDefault();
+		setDrag(false);
+	}
+
+	//Upload after drop
+	const onDropHandler = (event: DragEvent) => {
+		event.preventDefault();
+		const files = [...event.dataTransfer.files];
+		console.log(files);
+		setDrag(false);
+	}
 	
 	// const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 	//   setSelectedNomination(event.target.value);
 	// };
 
-	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-		if (event.target.files !== null) {
-			const file = event.target.files[0];
-			// Здесь вы можете обработать загрузку файла в выбранную категорию
-			console.log(`Загрузка файла ${file.name} в категорию ${selectedNomination}`);
+	//Upload after click
+	const handleUpload = (files: FileWithPath[]) => {
+		console.log(`Загрузка файла ${files}`);
+		if (files !== null) {
+			console.log(`Загрузка файла ${files}`);
+			const file = files.shift();
+			if (file !== undefined)
+			console.log(`Загрузка файла ${file.name}`);
 		}
 	};
 
@@ -119,14 +142,21 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 
 				<Grid item lg={12} className={`NominationItem ${isVisible ? 'fadeIn' : ''}`}>
 					{nomination !== '' && (
-						<Dropzone onDrop={(acceptedFiles) => { console.log(acceptedFiles); }}>
+						<Dropzone onDrop={handleUpload}>
 							{({ getRootProps, getInputProps }) => (
 								<section>
-
-									<div {...getRootProps()}>
+										<div {...getRootProps()}
+										className={	drag ? "DropArea2" : "DropArea"}
+										onDragStart={(e) => dragStartHandler(e) }
+										onDragLeave={(e) => dragLeaveHandler(e) }
+										onDragOver={(e) => dragStartHandler(e) } 
+										onDrop={(e) => onDropHandler(e)}>
 										<input {...getInputProps()} />
-										<p>Перетащите файлы сюда или кликните для выбора файлов</p>
-									</div>
+										{	drag 
+											? "Отпустите файлы чтобы загрузить" 
+											: "Перетащите файлы сюда или кликните для выбора файлов"
+										}
+										</div>
 								</section>
 							)}
 						</Dropzone>
