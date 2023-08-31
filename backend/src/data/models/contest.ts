@@ -9,7 +9,7 @@ import {
 	
 } from "typeorm";
 
-enum statuses {
+export enum statuses {
 	uploadWorks = 1,
 	selectWinners,
 	contestEnded

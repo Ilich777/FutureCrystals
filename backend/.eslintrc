@@ -44,6 +44,6 @@
 		],
 		"no-unused-vars": ["warn"],
 		"@typescript-eslint/no-var-requires": "off",
-		"prefer-const": ["warn"]
+		"prefer-const": ["off"]
 	}
 }

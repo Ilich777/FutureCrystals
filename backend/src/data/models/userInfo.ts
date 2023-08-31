@@ -19,7 +19,12 @@ class UserInfo extends BaseEntity {
 		parameterName: string;
 	@Column()
 		value: string;
-	@ManyToOne(() => Users)
+	@ManyToOne(() => Users, 
+		(user)=> user.info,
+		{	
+			onDelete: "CASCADE"
+		}
+	)
 	@JoinColumn({name: "user_id", referencedColumnName: "user_id", foreignKeyConstraintName: "userInfoUser_id"})
 		user: Users;
 	@CreateDateColumn()

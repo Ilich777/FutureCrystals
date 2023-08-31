@@ -30,12 +30,26 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 	const [nominations, setNominations] = useState(nom);
 
 	const [selectedNomination, setSelectedNomination] = useState('');
+	//const [nomId, setNomId] = useState("");
 	const [nominationDescription, setnominationDescription] = useState('');
 
 	const [nomination, setNomination] = React.useState('');
 	const [isVisible, setIsVisible] = useState(false);
 	const [drag, setDrag] = useState(false);
 
+	async function postData(url: string, obj: FormData) {
+		try {
+			const init = {
+				method: "POST",
+				body:obj
+			};
+			const result = await fetch(url, init);
+			return result;
+		}
+		catch (er) {
+			console.error("Ошибка:", er);
+		}
+	}
 
   useEffect(() => {
     setIsVisible(true);
@@ -76,10 +90,20 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 	}
 
 	//Upload after drop
-	const onDropHandler = (event: DragEvent) => {
+	const onDropHandler = async (event: DragEvent) => {
 		event.preventDefault();
-		const files = [...event.dataTransfer.files];
-		console.log(files);
+		const files = [...event.dataTransfer.files],
+		formData = new FormData();
+		for(let file of files){
+			formData.append("nomination_id", nomination);
+			formData.append("files", file);
+		}
+			
+		await postData("requests/create", formData)
+			.then(async (response)=>{
+				const result = await response?.json();
+				console.log(result);
+			});
 		setDrag(false);
 	}
 	

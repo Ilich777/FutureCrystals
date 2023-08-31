@@ -31,7 +31,7 @@ const nominationRouter = Router();
 
 nominationRouter.get("/:id", 
 	isAuth, 
-	allow("student", async (req: Request , res: Response) => {
+	allow("student"), async (req: Request , res: Response) => {
 		try{
 			const { id } = req.params;
 			const nominations = await nominationRepository.getByDirectionId(+id);
@@ -44,7 +44,7 @@ nominationRouter.get("/:id",
 		} catch(e:any){
 			console.log(e.message);
 		}
-	}));
+	});
 	
 
 export { nominationRouter };

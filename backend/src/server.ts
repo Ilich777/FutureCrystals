@@ -27,6 +27,7 @@ import session from "express-session";
 import sessionFileStore from "session-file-store";
 import cookieParser from "cookie-parser";
 import passport from "passport";
+import cors from "cors";
 import path from "path";
 
 const app : Express = express(),
@@ -34,10 +35,18 @@ const app : Express = express(),
 
 export const io = new Server(server);
 const s1 = io.of(/^\/[A-Z]{1}$/);
-//io.of("/B");
+const corsOptions = {
+	origin: "http://localhost:3000",
+	optionsSuccessStatus: 200
+};
 
 import { Config } from "./data/types/Config";
 import { StrategyOptions } from "passport-oauth2";
+
+export interface User {
+foobar: string;
+}
+
 
 //Без этого работать не будет
 let PORT: Config["PORT"] = 3500,
@@ -65,9 +74,11 @@ let PORT: Config["PORT"] = 3500,
 		rolling: true,
 		saveUninitialized:false
 	},
-	passportCreds: StrategyOptions;
+	passportCreds: StrategyOptions,
+	s3Conf: Config["s3Conf"],
+	API: Config["API"];
 
-export { passportCreds, postgres };
+export { passportCreds, postgres, s3Conf, API };
 
 //импорт роутеров
 import { initRouter } from "./web/initRouter";
@@ -88,6 +99,8 @@ if (!Object.hasOwn(env, "NODE_ENV") || env["NODE_ENV"] == "development") {
 	PORT = config.PORT;
 	postgres = config.postgres;
 	sessionOption = config.sessionOption;
+	s3Conf = config.s3Conf;
+	API = config.API;
 	env["isProd"] = "false";
 	
 } else if (env["NODE_ENV"] == "production") {
@@ -96,9 +109,10 @@ if (!Object.hasOwn(env, "NODE_ENV") || env["NODE_ENV"] == "development") {
 	postgres = JSON.parse(env["POSTGRES"]!== undefined ? env["POSTGRES"] : "{}");
 	sessionOption = JSON.parse(env["SESSION"]!== undefined ? env["SESSION"] : "{}");
 	passportCreds = JSON.parse(env["OAuth2Creds"]!== undefined ? env["OAuth2Creds"] : "{}");
+	s3Conf = JSON.parse(env["S3CONFIG"]!== undefined ? env["S3CONFIG"] : "{}");
+	API = env["API"] !== undefined ? env["API"] : "";
 	env["isProd"] = "true";
 }
-
 const FileStore = sessionFileStore(session);
 const sess = Object.assign(sessionOption, { store: new FileStore({path: "./backend/sessions"}) });
 //middlewares
@@ -108,15 +122,15 @@ app.use(bodyParser.json())
 	.use(cookieParser())
 	.use(session(sess))
 	.use(passport.initialize())
-	.use(passport.session());
+	.use(passport.session())
+	.use(cors(corsOptions));
 
 	
 app.get("/", 
 	isAuth, 
-	allow("student", function (_:any, res:any) {
+	allow("student"), function (_:any, res:any) {
 		res.sendFile(path.join(__dirname, "..", "..", "frontend", "build", "index.html"));
-	})
-);
+	});
 app.use(express.static(path.join(__dirname, "..", "..", "frontend", "build")));
 	
 //импорт подключения к PostgreSQL

@@ -16,12 +16,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
-import { Router } from "express";
+import { Router, Response } from "express";
 //import requestRepository from "../data/repos/requestRepository";
-/*import { 
+import { 
 	isAuth,
 	allow
-} from "./service/AuthMiddlewares";*/
+} from "./service/AuthMiddlewares";
+import requestsRepository from "../data/repos/requestsRepository";
+import { User } from "../data/passport";
+import { InfoForUpload } from "../data/repos/requestsRepository";
 
 export type request = {
 	service: {
@@ -31,27 +34,48 @@ export type request = {
         typeRequest_id: number
     }
 }
+
 const requestsRouter = Router();
-/*import { io } from "../server";*/
-/*requestsRouter.post("/create",async (req: any, res: any) => {
-	const body : request = req.body;
-	try {
-		const serviceAndTypeRequest = await requestRepository.checkBeforeCreate(body),
-			code = await requestRepository.getUniqueCode(body.service.service_id),
-			request = await requestRepository.create(serviceAndTypeRequest, code),
-			client = io.of(`/${code.unique_code[0]}`);
-		client.emit("create", {
-			status: "B ожидании",
-			code: request.unique_code,
-			service: serviceAndTypeRequest.service.service_name
-		});
-		const {unique_code} = code;
-		res.status(201).json(unique_code);
-	} catch(e: any) {
-		res.status(400).json(e.message);
-	}
-});
-requestsRouter.get("/", 
+
+requestsRouter.post("/create",
+	isAuth,
+	allow("student"), 
+	async (req: any, res: Response) => {
+		try {
+			const {
+					name, 
+					login, 
+					group_code, 
+					faculty
+				} = req.user as User,
+				result = await requestsRepository.checkBeforeUpload(req);
+			let info : InfoForUpload;
+			if (result !== undefined) {
+				info = {
+					nomination_id: result.nomination_id,
+					files: result.files,
+					contestYear: result.contestYear,
+					username: name,
+					login: login,
+					group_code: group_code,
+					faculty: faculty
+				};
+
+				await requestsRepository.uploadFiles(info);
+				await requestsRepository.createRecordsInDB();//contest_id, user_id, nomination_id, request_id, value
+			} else {
+				throw new Error("Something wrong with uploaded");
+			}
+				
+			
+			res.status(201).json("Uploaded");
+					
+
+		} catch(e: any) {
+			res.status(400).json(e.message);
+		}
+	});
+/*requestsRouter.get("/", 
 	isAuth,
 	allow("operator", async (req: any, res: any) => {
 		if (req.user !== undefined) {

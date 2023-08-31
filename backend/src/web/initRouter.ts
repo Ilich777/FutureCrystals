@@ -31,7 +31,7 @@ const initRouter = Router();
 
 initRouter.get("/", 
 	isAuth, 
-	allow("admin", async (_: Request , res: Response) => {
+	allow("admin"), async (_: Request , res: Response) => {
 		try{
 			const dr = await directionRepository.init();
 
@@ -44,7 +44,7 @@ initRouter.get("/",
 		} catch(e:any){
 			console.log(e.message);
 		}
-	}));
+	});
 	
 
 export { initRouter };

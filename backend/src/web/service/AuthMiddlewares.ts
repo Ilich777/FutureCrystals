@@ -21,8 +21,8 @@ import { userRolesConfig } from "../../data/userRoles";
 const { accessLevels } = userRolesConfig;
 type accessLevel = keyof typeof userRolesConfig.accessLevels;
 
-export const allow = function (accessLevel: accessLevel, callback: any) {
-	function checkUserRole(req: any, res: any) {
+export const allow = function (accessLevel: accessLevel) {
+	return (req: any, res: any, next: any) => {
 		const role: accessLevel = req.user.role;
 		const accessLevelByInputRole = accessLevels[accessLevel];
 		if (!accessLevelByInputRole.includes(role)) {
@@ -30,10 +30,10 @@ export const allow = function (accessLevel: accessLevel, callback: any) {
 			return;
 		}
 
-		callback(req, res);
-	}
+		next();
+	};
 
-	return checkUserRole;
+	
 };
 
 export const isAuth = (req: any, res: any, next: any) => {

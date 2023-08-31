@@ -32,5 +32,13 @@ interface Config  {
 		callbackURL: string;
 		passReqToCallback: false | undefined;
 	};
+	s3Conf: {
+		accessKeyId: string;
+		secretAccessKey: string;
+		Bucket: string;
+		endpoint: string;
+		region: string;
+	};
+	API: string;
 }
 export { Config };

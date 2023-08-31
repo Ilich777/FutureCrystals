@@ -27,7 +27,7 @@ const directionRouter = Router();
 
 directionRouter.get("/", 
 	isAuth, 
-	allow("student", async (_:Request, res:Response) => {
+	allow("student"), async (_:Request, res:Response) => {
 		try{
 			const directions = await directionRepository.getDirections();
 			res.status(200).json(directions);
@@ -35,6 +35,6 @@ directionRouter.get("/",
 		} catch(e:any){
 			console.log(e.message);
 		}
-	}));
+	});
 
 export { directionRouter };

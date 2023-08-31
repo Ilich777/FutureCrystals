@@ -22,19 +22,19 @@
 ## Installation
 1. Clone the repo
 ```sh
-   git clone https://gitlab.ektu.kz/dev-ektu/futureCrystals2.git
+    git clone https://gitlab.ektu.kz/dev-ektu/futureCrystals2.git
    ```
 2. Change path
 ```sh
-cd futureCrystals2/backend
+    cd futureCrystals2/backend
 ```
 3. Install NPM packages(dependencies)
 ```sh
-   npm i
+    npm i
    ```
 4. Change path
 ```sh
-cd ../frontend
+    cd ../frontend
 ```
 5. Install NPM packages(dependencies)
 ```sh
@@ -120,14 +120,14 @@ export const config : Config = {
 };
 
 8. Press F5 to start server
-Success run
+    Success run
 <div align="center";>
     <img src="readme_images/success run backend.jpg" alt="success run">
 </div>
 
 9. Run frontend build
 ```sh
-   npm run build --prefix frontend
+    npm run build --prefix frontend
    ```
 <div align="center";>
     <img src="readme_images/build frontend.jpg" alt="build frontend">
@@ -135,7 +135,7 @@ Success run
 
 10. Run frontend server
 ```sh
-   npm run start --prefix frontend
+    npm run start --prefix frontend
    ```
 <div align="center";>
     <img src="readme_images/start frontend server.jpg" alt="start frontend">
@@ -148,6 +148,9 @@ It's ok! Launched server return builded frontend page like in production mode.
 <div align="center";>
     <img src="readme_images/launched backend server.jpg" alt="launched backend">
 </div>
+
+
+
 But using for frontend development http://localhost:3000
 <div align="center";>
     <img src="readme_images/launched react server.jpg" alt="launched react">

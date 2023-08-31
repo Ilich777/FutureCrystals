@@ -4,10 +4,10 @@ import {
 	Column,
 	BaseEntity,
 	CreateDateColumn,
-	UpdateDateColumn
-	
+	UpdateDateColumn,
+	OneToMany
 } from "typeorm";
-
+import { UserInfo } from "./userInfo";
 /*enum statuses {
 	uploadWorks = 1,
 	selectWinners,
@@ -31,6 +31,14 @@ class Users extends BaseEntity {
 		default: roles.student,
 	})
 		role: string;
+	@OneToMany(
+		()=>UserInfo,
+		(info)=> info.user,
+		{	
+			cascade: true
+		}
+	)
+		info: UserInfo[];
 	@CreateDateColumn()
 		createdAt: Date;
 	@UpdateDateColumn()
