@@ -7,7 +7,7 @@ import {
 import { dbCreateConnection } from "../dbCreateConnection";
 import { postgres, s3Conf } from "../../server";
 import { readFile } from "fs";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, S3ClientConfig } from "@aws-sdk/client-s3";
 import { UserInfo } from "../models/userInfo";
 
 interface AfterCheck {
@@ -118,8 +118,7 @@ class RequestsRepository {
 				filename = file["originalFilename"] as unknown,
 				arrayFilename = filename as string,
 				extension = arrayFilename.split(".").pop(),
-
-				s3 = new S3Client({
+				conf = {
 					region: s3Conf.region,
 					credentials: {
 						accessKeyId: s3Conf.accessKeyId,
@@ -127,7 +126,9 @@ class RequestsRepository {
 					},
 					forcePathStyle: true,
 					endpoint: s3Conf.endpoint
-				}),
+				} as unknown,
+				s3c = conf as [] | [S3ClientConfig],
+				s3 = new S3Client({...s3c}),
 				timestamp = moment().utcOffset(6).format("yyyy-MM-DD_HH:mm:ss_x"),
 				pathForBucket = `${contestYear}/${direction_name}/${username} ${login} ${group_code} ${faculty}/${nomination_name}/doc_${timestamp}.${extension}`;
 			let params: BucketParams = {
