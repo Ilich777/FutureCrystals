@@ -153,7 +153,7 @@ class RequestsRepository {
 		}
 	}
 
-	public async createRecordsInDB(req: any) {
+	public async createRecordsInDB() {
 		return 1;
 	}
 }
