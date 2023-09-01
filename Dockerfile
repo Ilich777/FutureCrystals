@@ -5,12 +5,14 @@ ARG creds
 ARG postgres
 ARG session
 ARG api
+ARG s3config
 
 ENV PORT=$port
 ENV OAuth2Creds=$creds
 ENV POSTGRES=$postgres
 ENV SESSION=$session
 ENV API=$api
+ENV S3CONFIG=$s3config
 ENV NODE_ENV=production
 
 WORKDIR /usr/qsystem/backend
