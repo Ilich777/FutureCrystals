@@ -162,7 +162,7 @@ class RequestsRepository {
 		}
 	}
 
-	public async createRecordsInDB(activeContest: Contest, user_id: number) {
+	public async createRecordsInDB(activeContest: Contest/*, user_id: number*/) {
 		try {
 			const user = await Users.findOne({where:{user_id: 1}});
 			const request = new Requests();
@@ -171,8 +171,8 @@ class RequestsRepository {
 			request.user = user;
 			request.contest = activeContest;
 
-			const savedUser = await request.save();
-			
+			/*const savedUser = await request.save();*/
+
 		} catch (e: any) {
 			throw new Error("Contest not found by given year");
 		}

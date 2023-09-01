@@ -43,7 +43,7 @@ requestsRouter.post("/create",
 	async (req: any, res: Response) => {
 		try {
 			const {
-					user_id,
+					/*user_id,*/
 					name, 
 					login, 
 					group_code, 
@@ -56,7 +56,7 @@ requestsRouter.post("/create",
 					nomination_id,
 					files,
 					contestYear,
-					activeContest,
+					/*activeContest,*/
 				} = resultAfterCheck;
 				info = {
 					nomination_id: nomination_id,
