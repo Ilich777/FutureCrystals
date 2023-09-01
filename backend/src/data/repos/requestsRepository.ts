@@ -132,8 +132,10 @@ class RequestsRepository {
 					},
 					forcePathStyle: true,
 					endpoint: s3Conf.endpoint
-				} as unknown,
-				s3c = conf as [] | [S3ClientConfig],
+				} as unknown;
+			console.log(conf);
+			console.log(s3Conf.region);
+			const s3c = conf as [] | [S3ClientConfig],
 				s3 = new S3Client({...s3c}),
 				timestamp = moment().utcOffset(6).format("yyyy-MM-DD_HH:mm:ss_x"),
 				pathForBucket = `${contestYear}/${direction_name}/${username} ${login} ${group_code} ${faculty}/${nomination_name}/doc_${timestamp}.${extension}`;
