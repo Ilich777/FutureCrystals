@@ -31,6 +31,7 @@ interface Payload {
 	upn: string
 }
 export interface User {
+	user_id: number
 	login: string,
 	name: string,
 	role: string,
@@ -75,8 +76,11 @@ interface School{
 interface Department{
 	name: string
 }
+type Props = {
+	[x : string] : string
+}
 
-const strategyCallback = async function (_: any, __: any, refreshToken: any, ___: any, done: any) {
+const strategyCallback = async function (_: any, __: any, refreshToken: any, ___: any, done: any): Promise<void> {
 
 	const payloadJwt = refreshToken.id_token,
 		payload : Payload = decode(payloadJwt),
@@ -156,7 +160,9 @@ const strategyCallback = async function (_: any, __: any, refreshToken: any, ___
 				{ lastName, firstName, surName } = student,
 				userName = `${lastName} ${firstName}`,
 				full_name = `${userName} ${surName}`;
-			let school;
+			let school,
+				savedUser: Users,
+				user_id: number;
 			try {
 				school = await axios.get(API + `&query={
 						departments(
@@ -202,14 +208,17 @@ const strategyCallback = async function (_: any, __: any, refreshToken: any, ___
 				return userInfo;
 			});
 			user.user_name = userName;
+
 			try {
-				await user.save();
+				savedUser = await user.save();
+				user_id = savedUser.user_id;
 			} catch(e:any) {
 				throw new Error("User save error" + e);
 			}
 			if (user_name === undefined)
 				user_name = userName;
 			const scope : User = {
+				user_id: user_id,
 				login: user.login,
 				name : user_name,
 				role: user.role,
@@ -222,16 +231,23 @@ const strategyCallback = async function (_: any, __: any, refreshToken: any, ___
 		}
 	} else {
 		const arrayInfo = Object.entries(findedUser.info),
-			temp = ["group_code", "faculty"],
-			props = arrayInfo.filter((_, index)=>{
-				temp.includes(String(index));
-			});
+			temp = ["group_code", "school"];
+		let props : Props = {};
+		for (let element of arrayInfo) {
+			const unknownCurrent = element[1],
+				currentKey = unknownCurrent["parameterName"] as string,
+				currentValue = unknownCurrent["value"] as string;
+			if (temp.includes(currentKey)) {
+				props[currentKey] = currentValue;
+			}
+		}
 		const scope : User = {
+			user_id: findedUser.user_id,
 			login: findedUser.login,
-			name : user_name,
+			name : findedUser.user_name,
 			role: findedUser.role,
-			group_code: props[0],
-			faculty: props[1]
+			group_code: props["group_code"],
+			faculty: props["school"]
 		};
 		done(null, scope);
 	}

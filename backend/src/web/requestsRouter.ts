@@ -43,18 +43,25 @@ requestsRouter.post("/create",
 	async (req: any, res: Response) => {
 		try {
 			const {
+					user_id,
 					name, 
 					login, 
 					group_code, 
 					faculty
 				} = req.user as User,
-				result = await requestsRepository.checkBeforeUpload(req);
+				resultAfterCheck = await requestsRepository.checkBeforeUpload(req);
 			let info : InfoForUpload;
-			if (result !== undefined) {
+			if (resultAfterCheck !== undefined) {
+				const {
+					nomination_id,
+					files,
+					contestYear,
+					activeContest,
+				} = resultAfterCheck;
 				info = {
-					nomination_id: result.nomination_id,
-					files: result.files,
-					contestYear: result.contestYear,
+					nomination_id: nomination_id,
+					files: files,
+					contestYear: contestYear,
 					username: name,
 					login: login,
 					group_code: group_code,
@@ -62,7 +69,7 @@ requestsRouter.post("/create",
 				};
 
 				await requestsRepository.uploadFiles(info);
-				await requestsRepository.createRecordsInDB();//contest_id, user_id, nomination_id, request_id, value
+				//await requestsRepository.createRecordsInDB(activeContest, user_id);//contest_id, user_id, nomination_id, request_id, value
 			} else {
 				throw new Error("Something wrong with uploaded");
 			}

@@ -9,12 +9,15 @@ import { postgres, s3Conf } from "../../server";
 import { readFile } from "fs";
 import { S3Client, PutObjectCommand, S3ClientConfig } from "@aws-sdk/client-s3";
 import { UserInfo } from "../models/userInfo";
+import { Requests } from "../models/requests";
+import { Users } from "../models/users";
 
 interface AfterCheck {
 	nomination_id: number,
 	filesFromReq: unknown[],
 	files: formidable.Files[];
 	contestYear: number;
+	activeContest: Contest
 }
 interface InfoByNomId {
 	direction_name: string;
@@ -50,6 +53,7 @@ class RequestsRepository {
 				filesFromReq: [],
 				files: [],
 				contestYear: 2023,
+				activeContest: new Contest()
 			};
 
 
@@ -77,6 +81,8 @@ class RequestsRepository {
 
 		if (activeContest === null)
 			throw new Error("Конкурс не создан!");
+		else 
+			inputInfo.activeContest = activeContest;
 
 		switch (activeContest.status) {
 		case statuses.contestEnded:
@@ -136,13 +142,15 @@ class RequestsRepository {
 				Key: pathForBucket,
 				Body: Buffer.from("")
 			};
+			const fileBuffer = await new Promise<Buffer>((resolve, reject) => {
+				readFile(path, (err, fileBuffer) => {
+					if (err)
+						reject("reading file error");
+					resolve(fileBuffer);
 
-			readFile(path, (err, fileBuffer) => {
-				if (err)
-					throw new Error("reading file error");
-				params.Body = fileBuffer;
-
+				});
 			});
+			params.Body = fileBuffer;
 			const uploadCommand = new PutObjectCommand(params);
 			s3.send(uploadCommand)
 				.then(() => {
@@ -154,7 +162,20 @@ class RequestsRepository {
 		}
 	}
 
-	public async createRecordsInDB() {
+	public async createRecordsInDB(activeContest: Contest, user_id: number) {
+		try {
+			const user = await Users.findOne({where:{user_id: 1}});
+			const request = new Requests();
+			if (user === null)
+				throw new Error("User not found by given user_id");
+			request.user = user;
+			request.contest = activeContest;
+
+			const savedUser = await request.save();
+			
+		} catch (e: any) {
+			throw new Error("Contest not found by given year");
+		}
 		return 1;
 	}
 }
