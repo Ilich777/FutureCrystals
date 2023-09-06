@@ -25,7 +25,11 @@ class RequestValues extends BaseEntity {
 	@ManyToOne(() => Nominations)
 	@JoinColumn({name: "nomination_id", referencedColumnName: "nomination_id", foreignKeyConstraintName: "requestValuesNominations_id"})
 		nomination: Nominations;
-	@ManyToOne(() => Requests)
+	@ManyToOne(() => Requests, 
+		(request)=> request.values,
+		{	
+			onDelete: "CASCADE"
+		})
 	@JoinColumn({name: "request_id", referencedColumnName: "request_id", foreignKeyConstraintName: "requestValuesRequests_id"})
 		request: Requests;
 	@CreateDateColumn()

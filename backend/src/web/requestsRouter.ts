@@ -43,7 +43,7 @@ requestsRouter.post("/create",
 	async (req: any, res: Response) => {
 		try {
 			const {
-					/*user_id,*/
+					user_id,
 					name, 
 					login, 
 					group_code, 
@@ -56,7 +56,7 @@ requestsRouter.post("/create",
 					nomination_id,
 					files,
 					contestYear,
-					/*activeContest,*/
+					activeContest,
 				} = resultAfterCheck;
 				info = {
 					nomination_id: nomination_id,
@@ -68,14 +68,14 @@ requestsRouter.post("/create",
 					faculty: faculty
 				};
 
-				await requestsRepository.uploadFiles(info);
-				//await requestsRepository.createRecordsInDB(activeContest, user_id);//contest_id, user_id, nomination_id, request_id, value
+				const paths = await requestsRepository.uploadFiles(info);
+				await requestsRepository.createRecordsInDB(activeContest, user_id, nomination_id, paths);
 			} else {
 				throw new Error("Something wrong with uploaded");
 			}
 				
 			
-			res.status(201).json("Uploaded");
+			res.status(201).end();
 					
 
 		} catch(e: any) {

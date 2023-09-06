@@ -1,4 +1,6 @@
 import {
+	Alert,
+	Button,
 	Container,
 	FormControl,
 	Grid,
@@ -7,10 +9,12 @@ import {
 	MenuItem,
 	Select,
 	SelectChangeEvent,
+	Snackbar,
 	Typography
 } from '@mui/material';
 import React, { useState, useEffect, DragEvent } from 'react';
 import Dropzone, { FileWithPath } from 'react-dropzone';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 interface HPr {
 	id: number;
@@ -36,6 +40,10 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 	const [nomination, setNomination] = React.useState('');
 	const [isVisible, setIsVisible] = useState(false);
 	const [drag, setDrag] = useState(false);
+	const [activeButton, setActiveButton] = useState(false);
+	const [fileCount, setFileCount] = useState(0);
+	const [formData, setformData] = useState(new FormData());
+	const [successAlert, setSuccessAlert] = useState(false);
 
 	async function postData(url: string, obj: FormData) {
 		try {
@@ -77,6 +85,8 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 		const [findedNomination] = nominations.filter((nom) => nom.nomination_id === +nominationId);
 		setSelectedNomination(findedNomination.nomination_name);
 		setnominationDescription(findedNomination.description);
+		setFileCount(0);
+		setActiveButton(false);
 	};
 
 	const dragStartHandler = (event: DragEvent) => {
@@ -88,47 +98,63 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 		event.preventDefault();
 		setDrag(false);
 	}
-
 	//Upload after drop
 	const onDropHandler = async (event: DragEvent) => {
 		event.preventDefault();
 		const files = [...event.dataTransfer.files],
 		formData = new FormData();
+		let currentCountFiles = 0;
 		for(let file of files){
 			formData.append("nomination_id", nomination);
 			formData.append("files", file);
+			currentCountFiles++;
 		}
-			
-		await postData("requests/create", formData)
-			.then(async (response)=>{
-				const result = await response?.json();
-				console.log(result);
-			});
+		setFileCount(currentCountFiles);
+		setActiveButton(true);
+		setformData(formData);
 		setDrag(false);
 	}
-	
-	// const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-	//   setSelectedNomination(event.target.value);
-	// };
 
 	//Upload after click
-	const handleUpload = (files: FileWithPath[]) => {
-		console.log(`Загрузка файла ${files}`);
-		if (files !== null) {
-			console.log(`Загрузка файла ${files}`);
-			const file = files.shift();
-			if (file !== undefined)
-			console.log(`Загрузка файла ${file.name}`);
+	const onClickHandler = async (files: FileWithPath[]) => {
+		const formData = new FormData();
+		let currentCountFiles = 0;
+		for(let file of files){
+			formData.append("nomination_id", nomination);
+			formData.append("files", file);
+			currentCountFiles++;
 		}
+		setFileCount(currentCountFiles);
+		setActiveButton(true);
+		setformData(formData);
+		setDrag(false);
 	};
+	const onButtonClickHandler = async () => {
+		await postData("requests/create", formData)
+			.then(async (response)=>{
+				if(response?.status === 201)
+				setSuccessAlert(true);
+			
+				setFileCount(0);
+				setActiveButton(false);
+			});
+	}
 
+	const handleCloseSuccessAlert = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSuccessAlert(false);
+  };
 
 	return (
-		<Container maxWidth="xl" sx={{ minWidth: 120, width: { xs: 500, sm: 400, md: 600, lg: 450 } }} className="">
+		<>
+			<Container maxWidth="xl" sx={{ minWidth: 120, width: { xs: 500, sm: 400, md: 600, lg: 450 } }} className="">
 			{/* <Typography variant="h6" mt={5} gutterBottom sx={{ color: "#161227" }}>
 				Выберите номинацию
 			</Typography> */}
-			<Grid container spacing={10} className="NominationContainer">
+			<Grid container spacing={6} className="NominationContainer">
 				<Grid item lg={12} className="">
 					<FormControl fullWidth >
 						<InputLabel id="select-label">Номинация</InputLabel>
@@ -166,7 +192,7 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 
 				<Grid item lg={12} className={`NominationItem ${isVisible ? 'fadeIn' : ''}`}>
 					{nomination !== '' && (
-						<Dropzone onDrop={handleUpload}>
+						<Dropzone onDrop={onClickHandler}>
 							{({ getRootProps, getInputProps }) => (
 								<section>
 										<div {...getRootProps()}
@@ -186,9 +212,36 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 						</Dropzone>
 					)}
 				</Grid>
-
+				<Grid item lg={12} className={`NominationItem ${isVisible ? 'fadeIn' : ''}`}>
+				{nomination !== '' && (
+					<>
+						<p>Выбрано файлов: {fileCount}</p>
+						<Button
+							component="label"
+							variant="contained"
+							startIcon={<CloudUploadIcon />}
+							disabled = { !activeButton }
+							onClick={onButtonClickHandler}
+						>
+							Upload a file
+						</Button>
+					</>
+				)}
+				</Grid>
 			</Grid>
 		</Container>
+		<Snackbar
+			anchorOrigin={{ vertical: "bottom", horizontal: 'right' }}
+			autoHideDuration={2000}
+			open={successAlert}
+			onClose={handleCloseSuccessAlert}
+		>
+			<Alert onClose={handleCloseSuccessAlert} severity="success" sx={{ width: '100%' }}>
+          Файлы успешно отправлены!
+			</Alert>
+		</Snackbar>
+	</>
+
 	);
 };
 

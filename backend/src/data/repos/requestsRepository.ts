@@ -11,6 +11,8 @@ import { S3Client, PutObjectCommand, S3ClientConfig } from "@aws-sdk/client-s3";
 import { UserInfo } from "../models/userInfo";
 import { Requests } from "../models/requests";
 import { Users } from "../models/users";
+import { RequestValues } from "../models/requestValues";
+import { Nominations } from "../models/nominations";
 
 interface AfterCheck {
 	nomination_id: number,
@@ -99,7 +101,7 @@ class RequestsRepository {
 
 	}
 
-	public async uploadFiles(info: InfoForUpload): Promise<void> {
+	public async uploadFiles(info: InfoForUpload): Promise<string[]> {
 		const connection = await dbCreateConnection(postgres),
 			{
 				nomination_id,
@@ -110,7 +112,11 @@ class RequestsRepository {
 				group_code,
 				faculty
 			} = info;
-		let infoByNomId: InfoByNomId[];
+		let infoByNomId: InfoByNomId[],
+			paths: string[] = [],
+			infoForPath: string[] = [];
+		if (files.length === 0)
+			throw new Error("Array of files is empty");
 		try {
 			infoByNomId = await connection.query("SELECT d.direction_name, nomination_name FROM nominations INNER JOIN directions d USING(direction_id) WHERE nomination_id=$1", [nomination_id]);
 		} catch (e: any) {
@@ -122,21 +128,31 @@ class RequestsRepository {
 			const filepath = file["filepath"] as unknown,
 				path = filepath as string,
 				filename = file["originalFilename"] as unknown,
-				arrayFilename = filename as string,
-				extension = arrayFilename.split(".").pop(),
-				conf = {
-					region: s3Conf.region,
-					credentials: {
-						accessKeyId: s3Conf.accessKeyId,
-						secretAccessKey: s3Conf.secretAccessKey,
-					},
-					forcePathStyle: true,
-					endpoint: s3Conf.endpoint
-				} as unknown;
+				arrayFilename = filename as string;
+			const extension = arrayFilename.split(".").pop();
+			if (extension === undefined)
+				throw new Error("Filename don't exists extensions");
+			const conf = {
+				region: s3Conf.region,
+				credentials: {
+					accessKeyId: s3Conf.accessKeyId,
+					secretAccessKey: s3Conf.secretAccessKey,
+				},
+				forcePathStyle: true,
+				endpoint: s3Conf.endpoint
+			} as unknown;
 			const s3c = conf as [] | [S3ClientConfig],
 				s3 = new S3Client({...s3c}),
-				timestamp = moment().utcOffset(6).format("yyyy-MM-DD_HH:mm:ss_x"),
-				pathForBucket = `${contestYear}/${direction_name}/${username} ${login} ${group_code} ${faculty}/${nomination_name}/doc_${timestamp}.${extension}`;
+				timestamp = moment().utcOffset(6).format("yyyy-MM-DD_HH:mm:ss_x");
+
+			let	pathForBucket: string; 
+
+			infoForPath.push(String(contestYear), direction_name, username, login, String(group_code), String(faculty), nomination_name, timestamp, extension);
+			for (let bitOfPath of infoForPath) 
+				if(bitOfPath === undefined)
+					throw new Error("One or more values of path is undefined");
+			pathForBucket = `${contestYear}/${direction_name}/${username} ${login} ${group_code} ${faculty}/${nomination_name}/doc_${timestamp}.${extension}`;
+			paths.push(pathForBucket);
 			let params: BucketParams = {
 				Bucket: s3Conf.Bucket,
 				Key: pathForBucket,
@@ -160,23 +176,37 @@ class RequestsRepository {
 					console.error("Error uploading:", err);
 				});
 		}
+		return paths;
 	}
 
-	public async createRecordsInDB(activeContest: Contest/*, user_id: number*/) {
+	public async createRecordsInDB(activeContest: Contest, user_id: number, nomination_id: number, paths: string[]): Promise<void> {
 		try {
-			const user = await Users.findOne({where:{user_id: 1}});
+			const user = await Users.findOne({where:{user_id}});
 			const request = new Requests();
 			if (user === null)
 				throw new Error("User not found by given user_id");
 			request.user = user;
 			request.contest = activeContest;
+			
+			const nomination = await Nominations.findOne({where:{nomination_id}});
+			let values : RequestValues[];
+			if (nomination === null)
+				throw new Error("Nomination not found by given nomination_id");
+			values = paths.map((path)=>{
+				const reqValues = new RequestValues();
 
-			/*const savedUser = await request.save();*/
+				reqValues.nomination = nomination;
+				reqValues.value = path;
+
+				return reqValues;
+			});
+			request.values = values;
+			await request.save();
+
 
 		} catch (e: any) {
 			throw new Error("Contest not found by given year");
 		}
-		return 1;
 	}
 }
 export default new RequestsRepository();

@@ -5,10 +5,12 @@ import {
 	ManyToOne,
 	JoinColumn,
 	CreateDateColumn,
-	UpdateDateColumn
+	UpdateDateColumn,
+	OneToMany
 } from "typeorm";
 import { Contest } from "./contest";
 import { Users } from "./users";
+import { RequestValues } from "./requestValues";
 
 @Entity()
 class Requests extends BaseEntity {
@@ -20,6 +22,14 @@ class Requests extends BaseEntity {
 	@ManyToOne(() => Users)
 	@JoinColumn({name: "user_id", referencedColumnName: "user_id", foreignKeyConstraintName: "requestsUsers_id"})
 		user: Users;
+	@OneToMany(
+		()=>RequestValues,
+		(request)=> request.request,
+		{	
+			cascade: true
+		}
+	)
+		values: RequestValues[];
 	@CreateDateColumn()
 		createdAt: Date;
 	@UpdateDateColumn()
