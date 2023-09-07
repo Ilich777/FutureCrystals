@@ -8,6 +8,7 @@ import {
 	OneToMany
 } from "typeorm";
 import { UserInfo } from "./userInfo";
+import { Winners } from "./winners";
 /*enum statuses {
 	uploadWorks = 1,
 	selectWinners,
@@ -39,6 +40,14 @@ class Users extends BaseEntity {
 		}
 	)
 		info: UserInfo[];
+	@OneToMany(
+		()=>Winners,
+		(winner)=> winner.user,
+		{	
+			cascade: true
+		}
+	)
+		winner: UserInfo[];
 	@CreateDateColumn()
 		createdAt: Date;
 	@UpdateDateColumn()

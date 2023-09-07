@@ -1,5 +1,6 @@
 import {
 	Alert,
+	AlertColor,
 	Button,
 	Container,
 	FormControl,
@@ -43,7 +44,9 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 	const [activeButton, setActiveButton] = useState(false);
 	const [fileCount, setFileCount] = useState(0);
 	const [formData, setformData] = useState(new FormData());
-	const [successAlert, setSuccessAlert] = useState(false);
+	const [alertIsVisible, setAlertIsVisible] = useState(false);
+	const [uploadStatus, setUploadStatus] = useState("success");
+	const [uploadMessage, setUploadMessage] = useState("");
 
 	async function postData(url: string, obj: FormData) {
 		try {
@@ -132,20 +135,27 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 	const onButtonClickHandler = async () => {
 		await postData("requests/create", formData)
 			.then(async (response)=>{
-				if(response?.status === 201)
-				setSuccessAlert(true);
+				const result = await response?.json();
+				setUploadMessage(result);
+				if(response?.status === 201){
+					setUploadStatus("success");
+				} else {
+					setUploadStatus("warning");
+				}
+
+				setAlertIsVisible(true);
 			
 				setFileCount(0);
 				setActiveButton(false);
 			});
 	}
 
-	const handleCloseSuccessAlert = (event?: React.SyntheticEvent | Event, reason?: string) => {
+	const handleCloseAlert = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
 
-    setSuccessAlert(false);
+    setAlertIsVisible(false);
   };
 
 	return (
@@ -233,11 +243,11 @@ const NominationBody: React.FC<HPr> = ({ id }) => {
 		<Snackbar
 			anchorOrigin={{ vertical: "bottom", horizontal: 'right' }}
 			autoHideDuration={2000}
-			open={successAlert}
-			onClose={handleCloseSuccessAlert}
+			open={alertIsVisible}
+			onClose={handleCloseAlert}
 		>
-			<Alert onClose={handleCloseSuccessAlert} severity="success" sx={{ width: '100%' }}>
-          Файлы успешно отправлены!
+			<Alert onClose={handleCloseAlert} severity={uploadStatus as AlertColor} sx={{ width: '100%' }}>
+				{uploadMessage}
 			</Alert>
 		</Snackbar>
 	</>

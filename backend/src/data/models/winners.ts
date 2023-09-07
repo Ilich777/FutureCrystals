@@ -22,7 +22,11 @@ import { Directions } from "./directions";
 class Winners extends BaseEntity {
 	@PrimaryGeneratedColumn()
 		winner_id: number;
-	@ManyToOne(() => Users)
+	@ManyToOne(() => Users, 
+		(user)=> user.winner,
+		{	
+			onDelete: "CASCADE"
+		})
 	@JoinColumn({name: "user_id", referencedColumnName: "user_id", foreignKeyConstraintName: "winnersUser_id"})
 		user: Users;
 	@ManyToOne(() => Contest)

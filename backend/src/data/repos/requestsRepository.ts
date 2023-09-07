@@ -13,6 +13,7 @@ import { Requests } from "../models/requests";
 import { Users } from "../models/users";
 import { RequestValues } from "../models/requestValues";
 import { Nominations } from "../models/nominations";
+import { User } from "../passport";
 
 interface AfterCheck {
 	nomination_id: number,
@@ -40,6 +41,12 @@ interface BucketParams {
 	Key: string,
 	Body: Buffer,
 }
+interface Count {
+	count: string
+}
+interface Direction_id {
+	direction_id: string
+}
 
 class RequestsRepository {
 
@@ -47,7 +54,6 @@ class RequestsRepository {
 		//Отличный пример использования промиса.
 		//Так как form.parse ничего не возвращает и работает в синхронном режиме, то просто async/await нам не вытащить форму.
 		//А нам надо как-то вытащить оттуда файл и поле.
-
 		const inputInfo = await new Promise<AfterCheck>((resolve, reject) => {
 			const form = formidable();
 			let result: AfterCheck = {
@@ -70,6 +76,18 @@ class RequestsRepository {
 				resolve(result);
 			});
 		});
+
+		const user = req.user as User,
+			{ user_id }= user,
+			connection = await dbCreateConnection(postgres),
+			directionIdByNomId = await connection.query("SELECT n.direction_id FROM nominations n INNER JOIN directions USING(direction_id) WHERE nomination_id=$1", [inputInfo.nomination_id]) as unknown,
+			[directionIdObj] = directionIdByNomId as Direction_id[],
+			direction_id = directionIdObj["direction_id"],
+			winnerByUserId = await connection.query("SELECT COUNT(*) FROM winners WHERE user_id=$1 AND direction_id=$2", [user_id, direction_id]) as unknown,
+			[countObj] = winnerByUserId as Count[],
+			count = Number(countObj["count"]);
+		if(count > 0)
+			throw new Error("Вы являетесь победителем в данном напрвлении");
 
 		let activeContest;
 		if (inputInfo.filesFromReq.length === 0)

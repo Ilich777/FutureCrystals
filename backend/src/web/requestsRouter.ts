@@ -75,7 +75,7 @@ requestsRouter.post("/create",
 			}
 				
 			
-			res.status(201).end();
+			res.status(201).json("Файлы успешно отправлены!");
 					
 
 		} catch(e: any) {
