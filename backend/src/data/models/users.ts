@@ -15,6 +15,7 @@ import { Winners } from "./winners";
 	contestEnded
 }*/
 import { userRolesConfig } from "../userRoles";
+import { Requests } from "./requests";
 const { roles } = userRolesConfig;
 @Entity()
 class Users extends BaseEntity {
@@ -48,6 +49,14 @@ class Users extends BaseEntity {
 		}
 	)
 		winner: UserInfo[];
+	@OneToMany(
+		()=>Requests,
+		(request)=> request.user,
+		{	
+			cascade: true
+		}
+	)
+		request: Requests[];
 	@CreateDateColumn()
 		createdAt: Date;
 	@UpdateDateColumn()

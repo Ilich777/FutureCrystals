@@ -19,7 +19,11 @@ class Requests extends BaseEntity {
 	@ManyToOne(() => Contest)
 	@JoinColumn({name: "contest_id", referencedColumnName: "contest_id", foreignKeyConstraintName: "requestsContest_id"})
 		contest: Contest;
-	@ManyToOne(() => Users)
+	@ManyToOne(() => Users, 
+		(user)=> user.request,
+		{	
+			onDelete: "CASCADE"
+		})
 	@JoinColumn({name: "user_id", referencedColumnName: "user_id", foreignKeyConstraintName: "requestsUsers_id"})
 		user: Users;
 	@OneToMany(

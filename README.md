@@ -47,13 +47,15 @@
 <div align="center";>
         <img src="readme_images/backend build.jpg" alt="bbuild">
 </div>
-
+<br /><br /><br />
 7. CREATE CONFIG FILE !!!
 
 Input this code in /backend/src/data/conf/config.ts file with your values.
 In production sensitive data store in the gitlab variables.
 ### !!! DON'T REMOVE THIS PATH FROM .gitignore !!!
 ### !!! DON'T LEAVE SENSITIVE DATA SUCH AS TOKEN AND PASSWORD IN THE CODE !!!
+### !!! DON'T START SERVER WITHOUT FOLDERS backend/{dist/src}/data/models/*.{js, ts} !!!
+### !!! OTHERWISE INFORMATION IN THE DATABASE WILL BE LOST!!!
 domain: localhost in sessions leave as is, but callback url in creds ask the administrator.
 
 /** 
@@ -126,7 +128,7 @@ export const config : Config = {
 <div align="center";>
     <img src="readme_images/success run backend.jpg" alt="success run">
 </div>
-
+<br />
 9. Run frontend build
 ```sh
     npm run build --prefix frontend
@@ -134,7 +136,7 @@ export const config : Config = {
 <div align="center";>
     <img src="readme_images/build frontend.jpg" alt="build frontend">
 </div>
-
+<br />
 10. Run frontend server
 ```sh
     npm run start --prefix frontend
@@ -142,6 +144,7 @@ export const config : Config = {
 <div align="center";>
     <img src="readme_images/start frontend server.jpg" alt="start frontend">
 </div>
+<br />
 
 ### React will give error. Don't worry!
 Go to http://localhost:3500 for authentication
@@ -151,9 +154,9 @@ It's ok! Launched server return builded frontend page like in production mode.
     <img src="readme_images/launched backend server.jpg" alt="launched backend">
 </div>
 
-
-
+<br /><br />
 But using for frontend development http://localhost:3000
+<br />
 <div align="center";>
     <img src="readme_images/launched react server.jpg" alt="launched react">
 </div>
@@ -191,7 +194,6 @@ Future Crystals
 - 3.Конкурс завершён - Доступ закрыт для всех, кроме админа; для загрузки новых работ он создаёт новый конкурс на текущий год;
 5. Где можно посмотреть на какой стадии проект?
 - В файле CHANGELOG есть краткие комментарии об общем продвижении проекта.
-Вышеописанные возможности
 
 ## Technical Q&A
 1. На чём написана система?
@@ -210,8 +212,16 @@ Future Crystals
 5. Какие таблицы для чего нужны? 
 - В проекте пока 9 таблиц. Используются не все, но для дальнейшей разработки обязательно пригодятся.
 - Contest - таблица хранит конкурсы. Названием конкурса является год. Статус "загрузка работ" устанавливается по умолчанию после создания конкурса. 
-- Direction - Содержит направления для конкурса. Помимо названия имеет название изображения(может быть пустым), хранящегося во frontend/public/image. Имеет связь с Nominations 1:N. При удалении записи направления, удаляются все зависимые номинации.
-- Nomination - Содержит номинации, к которым уже прикрепляются грамоты.
+- Direction - Содержит направления для конкурса. Помимо названия имеет название изображения(может быть пустым), хранящегося во frontend/public/image. Имеет связь с Nominations 1:N. Настроено каскадное удаление, то есть при удалении записи направления, удаляются все зависимые номинации.
+- Nomination - Содержит номинации, к которым уже прикрепляются грамоты. Помимо названия имеет описание, максимально возможную оценку и внешний ключ direction_id для связи с таблицей Directions. Имеет связь N:1.
+- Operators - таблица для операторов. Планируется что пользователь, который хочет зайти после входа получает сообщение связаться с администратором. В свою очередь в логике авторизации должен быть сохранён пользователь с какой-то гостевой ролью. И если он действительно является оператором, тогда уже администратор сам назначает его, введя внешние ключи user_id и direction_id. И для дальнейших проверок пользоватею надо настроить роль operator. Реализует связь M:N между таблицами Users и Directions. Один пользователь может быть оператором в нескольких направлениях, и у одного направления может быть несколько операторов.
+- Users - таблица пользователей. Помимо имени пользователя содержит логин, почту, роль. Настроено каскадное удаление, то есть при удалении пользователя, удаляются все его запросы(Requests), данные запросов(RequestValues), информация о победах в направлениях (Winners) и вся информация по пользователю(UserInfo). С таблицами Requests, Winners и UserInfo настроена связь 1:N.
+- Winners - таблица победителей. Имеет 3 внешних ключа: user_id, contest_id, direction_id. Пользователь может быть несколько раз занесён в таблицу с разными направлениями по разным конкурсам. Связь с таблицами Users, Contest и Direction N:1.
+- UserInfo - таблица информации о пользователях. Содержит имя параметра информации о пользователе(например группа студента), значение(например 18-ВТ-1) и внешний ключ user_id для привязки к таблице Users. Имеет отношение N:1.
+- Requests и RequestValues- таблицы запросов пользователей. При входящем запросе создаётся запись в Request c id конкурса contest_id, и id пользователя user_id. Таблица Requests имеет отношение 1:N с таблицей RequestValues. Настроена каскадное удаление. В таблице RequestValues есть поле value для хранения ключа файла, под которым он был записан в хранилище. Именно по нему будет вытаскиваться файл для показа его оператору. Так же есть два внешних ключа nomination_id для привязки к конкретной номинации и request_id чтобы было понятно к какому запросу относится данная грамота/сертификат. Так же есть поле mark, которое устанавливается null. Оно будет хранить оценку определённой грамоты, которую уже выставил оператор.
+Связи между таблицами можно посмотреть в pgAdmin в дереве Servers->FutureCrystals->Databases->futurecrystals->(right click) ERD For Database.
+6. Как посмотреть хранилище?
+- Это можно сделать [тут](https://s3.ektu.kz:9001/login). За доступом обратиться к админмстратору.
 
 
 
@@ -268,17 +278,22 @@ C:\Users\Good Guy\Desktop\FutureCrystals2\frontend> npm run start
 
 ## Authors and acknowledgment
 Ilya Zhukov <ilyazhukov24@gmail.com> - Main Developer
+<br />
 Dmitry Rylsky - Mentor
+<br />
 Vladimir Krivykh - Admin
 
 
 ## License
 GNU GENERAL PUBLIC LICENSE
+<br />
 Version 3, 29 June 2007
+<br />
 Copyright (C) 2007 Free Software Foundation
 
 ## Project status
 If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
 
 <sub><sup><b>Easter egg<b></sup></sub>
+<br />
 <sub><sup>Выпьем тост за localhost</sup></sub>

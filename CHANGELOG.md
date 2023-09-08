@@ -27,3 +27,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Edited README
 - Add dropzone for React
 
+## [0.3.0] - 2023-09-07
+
+### Added
+- Upload input files in s3 storage
+- Edited README
+- On frontend count of uploaded files and upload button
+- notification for user after sending files
+- logic for users already participating in the chosen direction
+- new favicon :)
+- availability upload files in several nominations without reload page
+
