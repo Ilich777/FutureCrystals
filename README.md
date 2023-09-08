@@ -14,6 +14,18 @@
     </a>
 </div>
 
+## Upload file (user is winner in the current direction)
+<div align="center";>
+    <img src="readme_images/winnerTrue.png" alt="winnerTrue1">
+    <img src="readme_images/winnerTrue2.png" alt="winnerTrue2">
+</div>
+
+## Upload file (user is not winner in the current direction)
+<div align="center";>
+    <img src="readme_images/winnerFalse.png" alt="winnerFalse1">
+    <img src="readme_images/winnerFalse2.png" alt="winnerFalse2">
+</div>
+
 # Getting started
 
 ## Prerequisites
@@ -129,6 +141,7 @@ export const config : Config = {
     <img src="readme_images/success run backend.jpg" alt="success run">
 </div>
 <br />
+
 9. Run frontend build
 ```sh
     npm run build --prefix frontend
@@ -137,6 +150,7 @@ export const config : Config = {
     <img src="readme_images/build frontend.jpg" alt="build frontend">
 </div>
 <br />
+
 10. Run frontend server
 ```sh
     npm run start --prefix frontend
@@ -162,7 +176,7 @@ But using for frontend development http://localhost:3000
 </div>
 
 ### Easy deploying
-Just create commit and push it in remote origin in GitLab. After that writen code will be move in Docker container. After successful building site will be [available](https://fc.ektu.kz/)
+Just create commit and push it in remote origin in GitLab. After that writen code will be move in Docker container. After successful building and deploying site will be available [here](https://fc.ektu.kz/)
 
 ***
 
